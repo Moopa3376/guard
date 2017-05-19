@@ -21,7 +21,7 @@ public interface IGuardService {
     public List<Permission> leadIntoPermission();
     public void matchRoleAndPermission(List<Role> roles,List<Permission> permissions);
 
-    //将http请求妆花成permission
+    //将http请求化成permission
     public String convertRequestToPermission(ServletRequest servletRequest);
 
 

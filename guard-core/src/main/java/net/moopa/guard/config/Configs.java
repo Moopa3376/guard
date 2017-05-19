@@ -16,21 +16,25 @@ public class Configs {
     private static Logger logger = LoggerFactory.getLogger(Configs.class);
 
     static {
-        Properties properties = PropertiesFileUtil.getProperties("guard.ini");
+        Properties properties = PropertiesFileUtil.getProperties("guard.config");
         //开始验证 配置 是否正确
         //需要得到用户自己的用户服务实现
-        Object o1 = properties.get("guard.GuardService");
-        if(o1 == null){
-            logger.error("can't get interface IGuardService implement class, please check your config.");
-            throw new IllegalStateException();
-        }
-        configs.put("guard.guardService",o1.toString());
 
-        Object o2 = properties.get("");
+        put(properties,"guard.guardService");
+        put(properties,"guard.exclude.url");
+        put(properties,"filter.output");
 
     }
 
     public static String get(String key){
         return configs.get(key);
+    }
+
+    private static void put(Properties properties,String key){
+        Object o1 = properties.get(key);
+        if(o1 == null){
+
+        }
+        configs.put(key,o1.toString().trim());
     }
 }

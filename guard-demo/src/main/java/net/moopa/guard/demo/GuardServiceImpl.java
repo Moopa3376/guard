@@ -1,4 +1,4 @@
-package net.moopa.guard;
+package net.moopa.guard.demo;
 
 import net.moopa.guard.model.account.Account;
 import net.moopa.guard.model.permission.Permission;
@@ -75,7 +75,7 @@ public class GuardServiceImpl implements IGuardService{
 
     public String convertRequestToPermission(ServletRequest servletRequest) {
         String method = ((HttpServletRequest)servletRequest).getMethod();
-        String requestPath = ((HttpServletRequest)servletRequest).getRequestURI();
+        String requestPath = ((HttpServletRequest)servletRequest).getPathInfo();
         return requestPath+"|"+method;
     }
 

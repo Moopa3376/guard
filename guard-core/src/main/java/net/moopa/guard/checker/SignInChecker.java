@@ -33,6 +33,7 @@ public class SignInChecker {
             authorizeToken = new AuthorizeToken();
             //开始在authorizeToken中加入一些登录信息
             authorizeToken.setLoginname(loginname);
+            //加入token
             authorizeToken.updateJwtToken(null);
 
             //往cache添加相关项

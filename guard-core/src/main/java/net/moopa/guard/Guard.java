@@ -11,6 +11,9 @@ import net.moopa.guard.token.AuthorizeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -39,8 +42,84 @@ public class Guard {
 
 
 
-    public static void init(){
+
+    /**
+     * 该方法用来进行登录操作,登录成功后返回
+     * 交给SignInChecker来进行登录
+     * @return null-登录不成功
+     */
+    public static AuthorizeToken signin(String loginname,String password,ServletResponse servletResponse){
+        AuthorizeToken authorizeToken = signInChecker.signin(loginname,password);
+
+        //往http header中添加X-token
+        ((HttpServletResponse)servletResponse).setHeader("X-token",authorizeToken.getJwtToken());
+
+        return authorizeToken;
+    }
+
+    public static boolean isTokenExisted(String tokenname){
+        return cache.tokenCache.containsKey(tokenname);
+    }
+
+    /**
+     * 该方法主要用于用户的下线操作
+     * 根据token来进行下线
+     */
+    public static boolean signoff(String tokenname){
+        //直接在缓存中删除相应authorizeToken
+        cache.tokenCache.remove(tokenname);
+
+        return true;
+    }
+
+
+    public static boolean permissionCheck(String tokenname,String permission){
+        Account account = getAccountByTokenname(tokenname);
+
+        Role role = cache.getRolenameByRoleId(account.getRole_id());
+
+        return permissionChecker.permissionCheck(role,permission);
+    }
+
+    public static Account getAccount(ServletRequest servletRequest){
+        String tokenname = ((HttpServletRequest)servletRequest).getHeader("X-token");
+        if(tokenname == null){
+            return null;
+        }
+        return getAccountByTokenname(tokenname);
+    }
+
+
+    public static AuthorizeToken getAuthorizeToken(ServletRequest servletRequest){
+        String tokenname = ((HttpServletRequest)servletRequest).getHeader("X-token");
+        if(tokenname == null){
+            return null;
+        }
+        return getAuthorizeTokenByName(tokenname);
+    }
+
+    private static Account getAccountByTokenname(String tokenname){
+        Account account = cache.getAccount(tokenname);
+        if(account == null){
+            account = guardService.getAccountByLoginname(tokenname);
+            if(account == null){
+                logger.error("can't get account by loginname {}, please ensure your guard service class implement correctly.",tokenname);
+                return null;
+            }
+            cache.putAccount(tokenname,account);
+        }
+        return account;
+    }
+
+    private static AuthorizeToken getAuthorizeTokenByName(String tokenname){
+        AuthorizeToken authorizeToken = cache.getAuthorizeTokenByTokenName(tokenname);
+        return authorizeToken;
+    }
+
+
+    private static void init(){
         if(!isInited){
+
 
             //初始化缓存,读入角色和权限数据
             cache = new GuardCache();
@@ -62,70 +141,26 @@ public class Guard {
         }
     }
 
-    /**
-     * 该方法用来进行登录操作,登录成功后返回
-     * 交给SignInChecker来进行登录
-     * @return null-登录不成功
-     */
-    public static AuthorizeToken signin(String loginname,String password){
-        AuthorizeToken authorizeToken = signInChecker.signin(loginname,password);
-
-        return authorizeToken;
-    }
-
-    /**
-     * 该方法主要用于用户的下线操作
-     * 根据token来进行下线
-     */
-    public static boolean signoff(String loginname){
-        //直接在缓存中删除相应account
-
-        return true;
-    }
-
-    public static Account getAccountByAuthorizeTokenName(String jwt){
-        return null;
-    }
-
-
-    public static boolean permissionCheck(String loginname,String permission){
-        Account account = getAccountByLoginname(loginname);
-
-        Role role = cache.getRolenameByRoleId(account.getRole_id());
-
-        return permissionChecker.permissionCheck(role,permission);
-    }
-
-    public static Account getAccountByLoginname(String loginname){
-        Account account = cache.getAccount(loginname);
-        if(account == null){
-            account = guardService.getAccountByLoginname(loginname);
-            if(account == null){
-                logger.error("can't get account by loginname {}, please ensure your guard service class implement correctly.",loginname);
-                return null;
-            }
-            cache.putAccount(loginname,account);
-        }
-        return account;
-    }
-
-
     static{
-        //进行初始化
-        init();
-
         //获取用户自身所定义的服务实现类
-        String passwordMatcherClass = Configs.get("guard.guardService");
+        String serviceClass = Configs.get("guard.guardService");
+        Class servClass = null;
         try {
-            guardService = (IGuardService) (Class.forName(passwordMatcherClass).newInstance());
+            servClass = Class.forName(serviceClass.trim());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            guardService = (IGuardService) (servClass.newInstance());
         } catch (InstantiationException e) {
             System.err.println("Please add the constructor with no parameter.\n");
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             System.err.println("Please add the public constructor with no parameter.\n");
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
+
+        //进行初始化
+        init();
     }
 }

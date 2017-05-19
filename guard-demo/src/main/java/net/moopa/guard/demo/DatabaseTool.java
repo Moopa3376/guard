@@ -1,4 +1,4 @@
-package net.moopa.guard;
+package net.moopa.guard.demo;
 
 import java.sql.*;
 

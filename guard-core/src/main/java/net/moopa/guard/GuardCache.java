@@ -48,7 +48,7 @@ public class GuardCache {
 
     public Cache<String,Role> roleCache = roleCacheManager.getCache("roleCache", String.class,Role.class);
     public Cache<String,Account> accountCache = accountCacheManager.getCache("accountCache",String.class,Account.class);
-    public Cache<String,AuthorizeToken> tokenCache = accountCacheManager.getCache("tokenCache",String.class,AuthorizeToken.class);
+    public Cache<String,AuthorizeToken> tokenCache = tokenCacheManager.getCache("tokenCache",String.class,AuthorizeToken.class);
 
 
     protected Map<Integer,Role> roleIdMapRolename = new HashMap<Integer, Role>();
@@ -73,12 +73,12 @@ public class GuardCache {
         return result;
     }
 
-    public Account getAccount(String loginname){
-        return accountCache.get(loginname);
+    public Account getAccount(String tokenname){
+        return accountCache.get(tokenname);
     }
 
-    public void putAccount(String loginname,Account account){
-        accountCache.put(loginname,account);
+    public void putAccount(String tokenname,Account account){
+        accountCache.put(tokenname,account);
     }
 
     public Role getRole(String rolename){
