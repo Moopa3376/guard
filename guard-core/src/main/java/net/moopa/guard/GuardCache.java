@@ -46,8 +46,13 @@ public class GuardCache {
             .build(true);
 
 
+    //roleCache的key是roleName
     public Cache<String,Role> roleCache = roleCacheManager.getCache("roleCache", String.class,Role.class);
+
+    //token是tokenname
     public Cache<String,Account> accountCache = accountCacheManager.getCache("accountCache",String.class,Account.class);
+
+    //account的key是loginname
     public Cache<String,AuthorizeToken> tokenCache = tokenCacheManager.getCache("tokenCache",String.class,AuthorizeToken.class);
 
 
@@ -73,12 +78,12 @@ public class GuardCache {
         return result;
     }
 
-    public Account getAccount(String tokenname){
-        return accountCache.get(tokenname);
+    public Account getAccount(String loginname){
+        return accountCache.get(loginname);
     }
 
-    public void putAccount(String tokenname,Account account){
-        accountCache.put(tokenname,account);
+    public void putAccount(String loginname,Account account){
+        accountCache.put(loginname,account);
     }
 
     public Role getRole(String rolename){

@@ -51,8 +51,12 @@ public class Guard {
     public static AuthorizeToken signin(String loginname,String password,ServletResponse servletResponse){
         AuthorizeToken authorizeToken = signInChecker.signin(loginname,password);
 
-        //往http header中添加X-token
-        ((HttpServletResponse)servletResponse).setHeader("X-token",authorizeToken.getJwtToken());
+        if(authorizeToken != null) {
+            //往http header中添加X-token
+            ((HttpServletResponse) servletResponse).setHeader("X-token", authorizeToken.getJwtToken());
+        }else {
+            ((HttpServletResponse) servletResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
 
         return authorizeToken;
     }
@@ -68,13 +72,14 @@ public class Guard {
     public static boolean signoff(String tokenname){
         //直接在缓存中删除相应authorizeToken
         cache.tokenCache.remove(tokenname);
+        //不删除account缓存
 
         return true;
     }
 
 
     public static boolean permissionCheck(String tokenname,String permission){
-        Account account = getAccountByTokenname(tokenname);
+        Account account = getAccountByLoginname(cache.getAuthorizeTokenByTokenName(tokenname).getLoginname());
 
         Role role = cache.getRolenameByRoleId(account.getRole_id());
 
@@ -86,9 +91,8 @@ public class Guard {
         if(tokenname == null){
             return null;
         }
-        return getAccountByTokenname(tokenname);
+        return getAccountByLoginname(cache.getAuthorizeTokenByTokenName(tokenname).getLoginname());
     }
-
 
     public static AuthorizeToken getAuthorizeToken(ServletRequest servletRequest){
         String tokenname = ((HttpServletRequest)servletRequest).getHeader("X-token");
@@ -98,7 +102,7 @@ public class Guard {
         return getAuthorizeTokenByName(tokenname);
     }
 
-    private static Account getAccountByTokenname(String tokenname){
+    public static Account getAccountByLoginname(String tokenname){
         Account account = cache.getAccount(tokenname);
         if(account == null){
             account = guardService.getAccountByLoginname(tokenname);
@@ -111,7 +115,7 @@ public class Guard {
         return account;
     }
 
-    private static AuthorizeToken getAuthorizeTokenByName(String tokenname){
+    public static AuthorizeToken getAuthorizeTokenByName(String tokenname){
         AuthorizeToken authorizeToken = cache.getAuthorizeTokenByTokenName(tokenname);
         return authorizeToken;
     }
