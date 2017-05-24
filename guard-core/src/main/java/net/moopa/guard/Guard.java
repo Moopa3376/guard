@@ -54,6 +54,8 @@ public class Guard {
         if(authorizeToken != null) {
             //往http header中添加X-token
             ((HttpServletResponse) servletResponse).setHeader("X-token", authorizeToken.getJwtToken());
+            //往cache中添加相关项
+            cache.tokenCache.put(authorizeToken.getJwtToken(),authorizeToken);
         }else {
             ((HttpServletResponse) servletResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }

@@ -1,7 +1,9 @@
 package net.moopa.guard.fliter;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import net.moopa.guard.Guard;
 import net.moopa.guard.config.Configs;
+import net.moopa.guard.jwt.JwtWrapper;
 import net.moopa.guard.model.account.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +66,11 @@ public class GuardFilter implements Filter {
             token = "null";
         }
         //验证token正确性 - 是否是我方所签发的,如果不正确则直接返回401
-        //=============
+        DecodedJWT jwt = JwtWrapper.verifyAndDecodeJwt(token);
+        if(jwt == null){
+            ((HttpServletResponse)servletResponse).setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         //看看cache中是否有当前的token
         if(!Guard.isTokenExisted(token)){

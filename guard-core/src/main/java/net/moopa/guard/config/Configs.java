@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -20,11 +22,9 @@ public class Configs {
         //开始验证 配置 是否正确
         //需要得到用户自己的用户服务实现
 
-        put(properties,"guard.guardService");
-        put(properties,"guard.exclude.url");
-        put(properties,"filter.output");
-        put(properties,"jwt.salt");
-
+        for(Map.Entry<Object,Object> e :properties.entrySet()){
+            put(properties,e.getKey().toString());
+        }
     }
 
     public static String get(String key){

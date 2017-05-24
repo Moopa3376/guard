@@ -18,7 +18,7 @@ import java.io.UnsupportedEncodingException;
 public class JwtWrapper {
     //init
     private static final String secretKey = Configs.get("jwt.secret");
-    private static final String issuer = "https://iyummmy.com";
+    private static final String issuer = Configs.get("jwt.issuer");
     //HMAC
     private static Algorithm algorithmHS;
     //verify
@@ -35,8 +35,12 @@ public class JwtWrapper {
     }
 
 
-    public static String getJwt(){
-        return JWT.create().withIssuer(issuer).sign(algorithmHS);
+    public static String getJwt(String loginname,String accoount_id){
+        return JWT.create()
+                .withIssuer(issuer)
+                .withClaim("loginname",loginname)
+                .withClaim("aid",accoount_id)
+                .sign(algorithmHS);
     }
 
     public static DecodedJWT verifyAndDecodeJwt(String token){
@@ -46,6 +50,7 @@ public class JwtWrapper {
         }catch (JWTVerificationException exception){
             return null;
         }
+
         return decodedJWT;
     }
 

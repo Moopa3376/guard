@@ -1,6 +1,8 @@
 package net.moopa.guard.checker;
 
 import net.moopa.guard.Guard;
+import net.moopa.guard.jwt.JwtWrapper;
+import net.moopa.guard.model.account.Account;
 import net.moopa.guard.service.IGuardService;
 import net.moopa.guard.token.AuthorizeToken;
 
@@ -26,7 +28,8 @@ public class SignInChecker {
 
         //接下来比对loginname和password是否匹配
         //需要拿到数据库中存储的密码
-        String anpassword = guardService.getAccountByLoginname(loginname).getPassword();
+        Account account = guardService.getAccountByLoginname(loginname);
+        String anpassword = account.getPassword();
         boolean match = guardService.matchPassword(password,anpassword);
 
         if(match){
@@ -34,9 +37,8 @@ public class SignInChecker {
             //开始在authorizeToken中加入一些登录信息
             authorizeToken.setLoginname(loginname);
             //加入token
-            authorizeToken.updateJwtToken(null);
+            authorizeToken.updateJwtToken(JwtWrapper.getJwt(loginname,String.valueOf(account.getAccount_id())));
 
-            //往cache添加相关项
         }
 
         return authorizeToken;
