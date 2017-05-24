@@ -23,6 +23,7 @@ public class Configs {
         put(properties,"guard.guardService");
         put(properties,"guard.exclude.url");
         put(properties,"filter.output");
+        put(properties,"jwt.salt");
 
     }
 
