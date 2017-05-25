@@ -35,11 +35,10 @@ public class JwtWrapper {
     }
 
 
-    public static String getJwt(String loginname,String accoount_id){
+    public static String getJwt(String uid){
         return JWT.create()
                 .withIssuer(issuer)
-                .withClaim("loginname",loginname)
-                .withClaim("aid",accoount_id)
+                .withClaim("uid",uid)
                 .sign(algorithmHS);
     }
 

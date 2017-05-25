@@ -1,8 +1,10 @@
 package net.moopa.guard;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import net.moopa.guard.checker.PermissionChecker;
 import net.moopa.guard.checker.SignInChecker;
 import net.moopa.guard.config.Configs;
+import net.moopa.guard.jwt.JwtWrapper;
 import net.moopa.guard.model.account.Account;
 import net.moopa.guard.model.permission.Permission;
 import net.moopa.guard.model.role.Role;
