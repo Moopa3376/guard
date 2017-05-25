@@ -62,8 +62,8 @@ public class GuardServiceImpl implements IGuardService{
                 while(resultSet.next()){
                     int pid = Integer.parseInt(resultSet.getString(2));
                     for(Permission p : permissions){
-                        if(p.pid == pid){
-                            role.putPermission(p.permissionName,p);
+                        if(p.permission_id == pid){
+                            role.putPermission(p.permission_name,p);
                         }
                     }
                 }

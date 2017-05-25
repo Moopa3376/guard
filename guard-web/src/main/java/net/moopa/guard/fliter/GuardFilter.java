@@ -63,12 +63,13 @@ public class GuardFilter implements Filter {
         //获取相应token
         String token = ((HttpServletRequest) servletRequest).getHeader("X-token");
         if(token == null){
-            token = "null";
+            ((HttpServletResponse)servletResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
         //验证token正确性 - 是否是我方所签发的,如果不正确则直接返回401
         DecodedJWT jwt = JwtWrapper.verifyAndDecodeJwt(token);
         if(jwt == null){
-            ((HttpServletResponse)servletResponse).setStatus(HttpServletResponse.SC_FORBIDDEN);
+            ((HttpServletResponse)servletResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
