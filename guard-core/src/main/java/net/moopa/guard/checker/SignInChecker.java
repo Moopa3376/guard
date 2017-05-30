@@ -6,6 +6,8 @@ import net.moopa.guard.model.account.Account;
 import net.moopa.guard.service.IGuardService;
 import net.moopa.guard.token.AuthorizeToken;
 
+import java.util.Date;
+
 /**
  * Created by Moopa on 16/05/2017.
  * blog: leeautumn.net
@@ -37,7 +39,7 @@ public class SignInChecker {
             //开始在authorizeToken中加入一些登录信息
             authorizeToken.setLoginname(loginname);
             //加入token
-            authorizeToken.updateJwtToken(JwtWrapper.getJwt(loginname,String.valueOf(account.getAccount_id())));
+            authorizeToken.updateJwtToken(JwtWrapper.getJwt(System.currentTimeMillis()+""));
 
         }
 

@@ -1,13 +1,17 @@
 package net.moopa.guard.jwt;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.moopa.guard.config.Configs;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 /**
  * Created by Moopa on 24/05/2017.
@@ -35,11 +39,19 @@ public class JwtWrapper {
     }
 
 
-    public static String getJwt(String uid){
+    public static String getJwt(String now){
         return JWT.create()
                 .withIssuer(issuer)
-                .withClaim("uid",uid)
+                .withClaim("created",now)
                 .sign(algorithmHS);
+    }
+
+    public static String getJwt(JsonObject jsonObject){
+        JWTCreator.Builder builder = JWT.create();
+        for(Map.Entry<String,JsonElement> entry : jsonObject.entrySet()){
+            builder.withClaim(entry.getKey(),entry.getValue().getAsString());
+        }
+        return builder.sign(algorithmHS);
     }
 
     public static DecodedJWT verifyAndDecodeJwt(String token){

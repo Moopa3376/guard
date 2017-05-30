@@ -1,6 +1,9 @@
 package net.moopa.guard;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.moopa.guard.checker.PermissionChecker;
 import net.moopa.guard.checker.SignInChecker;
 import net.moopa.guard.config.Configs;
@@ -17,6 +20,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Moopa on 13/05/2017.
@@ -98,6 +102,8 @@ public class Guard {
         return getAccountByLoginname(cache.getAuthorizeTokenByTokenName(tokenname).getLoginname());
     }
 
+
+    //token相关操作
     public static AuthorizeToken getAuthorizeToken(ServletRequest servletRequest){
         String tokenname = ((HttpServletRequest)servletRequest).getHeader("X-token");
         if(tokenname == null){
@@ -106,6 +112,24 @@ public class Guard {
         return getAuthorizeTokenByName(tokenname);
     }
 
+    public static AuthorizeToken updateAuthorizeToken(AuthorizeToken token,String key,String val){
+        String jwt = token.getJwtToken();
+        DecodedJWT decodedJWT = JwtWrapper.verifyAndDecodeJwt(jwt);
+        String payload = decodedJWT.getPayload();
+
+        //进行json解析
+        JsonParser jsonParser = new JsonParser();
+        JsonObject jsonObject = (JsonObject) jsonParser.parse(payload);
+        jsonObject.addProperty(key,val);
+
+        String res_token = JwtWrapper.getJwt(jsonObject);
+        token.updateJwtToken(res_token);
+
+        return token;
+    }
+
+
+    //缓存相关操作
     public static Account getAccountByLoginname(String tokenname){
         Account account = cache.getAccount(tokenname);
         if(account == null){
