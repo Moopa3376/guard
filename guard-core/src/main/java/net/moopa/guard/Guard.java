@@ -112,7 +112,7 @@ public class Guard {
         return getAuthorizeTokenByName(tokenname);
     }
 
-    public static AuthorizeToken updateAuthorizeToken(AuthorizeToken token,String key,String val){
+    public static AuthorizeToken updateAuthorizeToken(AuthorizeToken token,String key,String val,HttpServletResponse httpServletResponse){
         String jwt = token.getJwtToken();
         DecodedJWT decodedJWT = JwtWrapper.verifyAndDecodeJwt(jwt);
         String payload = decodedJWT.getPayload();
@@ -125,9 +125,20 @@ public class Guard {
         String res_token = JwtWrapper.getJwt(jsonObject);
         token.updateJwtToken(res_token);
 
+        //接下来在http-header中进行更新
+        httpServletResponse.setHeader("X-token",res_token);
+
         return token;
     }
 
+    public static String getValFromToken(AuthorizeToken token,String key){
+        String jwt = token.getJwtToken();
+        //直接认为是已知正确的token
+        //获取payload
+        String payload = jwt.split("\\.")[1];
+        JsonObject jsonObject = (JsonObject) new JsonParser().parse(payload);
+        return jsonObject.get(key).getAsString();
+    }
 
     //缓存相关操作
     public static Account getAccountByLoginname(String tokenname){

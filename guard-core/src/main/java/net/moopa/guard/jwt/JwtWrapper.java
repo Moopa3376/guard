@@ -65,5 +65,9 @@ public class JwtWrapper {
         return decodedJWT;
     }
 
+    public static String getValInPayload(String token,String key){
+        return verifyAndDecodeJwt(token).getClaim(key).asString();
+    }
+
 
 }
