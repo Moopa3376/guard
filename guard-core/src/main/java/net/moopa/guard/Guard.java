@@ -109,7 +109,13 @@ public class Guard {
         if(tokenname == null){
             return null;
         }
-        return getAuthorizeTokenByName(tokenname);
+        AuthorizeToken token = getAuthorizeTokenByName(tokenname);
+        if(token == null){
+            token = new AuthorizeToken();
+            token.updateJwtToken(tokenname);
+            return token;
+        }
+        return token;
     }
 
     public static AuthorizeToken updateAuthorizeToken(AuthorizeToken token,String key,String val,HttpServletResponse httpServletResponse){
