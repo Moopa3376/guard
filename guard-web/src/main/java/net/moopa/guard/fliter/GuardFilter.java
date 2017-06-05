@@ -2,9 +2,8 @@ package net.moopa.guard.fliter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import net.moopa.guard.Guard;
-import net.moopa.guard.config.Configs;
+import net.moopa.guard.config.GuardConfigs;
 import net.moopa.guard.jwt.JwtWrapper;
-import net.moopa.guard.model.account.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +11,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -23,11 +21,11 @@ import java.util.HashSet;
  */
 public class GuardFilter implements Filter {
     private static Logger logger = LoggerFactory.getLogger(GuardFilter.class);
-    private static boolean logger_output = "true".equals(Configs.get("filter.output")) ? true : false ;
+    private static boolean logger_output = "true".equals(GuardConfigs.get("filter.output")) ? true : false ;
     private static HashSet<String> exurls = new HashSet<String>();
 
     static {
-        String exclude = Configs.get("guard.exclude.url");
+        String exclude = GuardConfigs.get("guard.exclude.url");
         String[] ss = exclude.split(",");
         for(String s : ss){
             if(s != null && !s.equals("")){

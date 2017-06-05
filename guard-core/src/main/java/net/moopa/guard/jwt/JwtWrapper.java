@@ -8,7 +8,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.moopa.guard.config.Configs;
+import net.moopa.guard.config.GuardConfigs;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
@@ -21,8 +21,8 @@ import java.util.Map;
  */
 public class JwtWrapper {
     //init
-    private static final String secretKey = Configs.get("jwt.secret");
-    private static final String issuer = Configs.get("jwt.issuer");
+    private static final String secretKey = GuardConfigs.get("jwt.secret");
+    private static final String issuer = GuardConfigs.get("jwt.issuer");
     //HMAC
     private static Algorithm algorithmHS;
     //verify

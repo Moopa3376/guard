@@ -10,7 +10,7 @@ import java.util.Map;
  * @autuor : Moopa
  */
 public class Account {
-    public long account_id;
+    public int account_id;
     public String loginname;
     public String password;
     String phone;
@@ -25,7 +25,7 @@ public class Account {
     public Account(){}
 
     public Account(String account_id,String loginname,String password,String role_id){
-        this.account_id = Long.parseLong(account_id);
+        this.account_id = Integer.parseInt(account_id);
         this.loginname = loginname;
         this.password = password;
         this.role_id = Integer.parseInt(role_id);
@@ -39,12 +39,52 @@ public class Account {
         attachment.remove(key);
     }
 
-    public long getAccount_id() {
+    public int getAccount_id() {
         return account_id;
     }
 
-    public void setAccount_id(long account_id) {
+    public void setAccount_id(int account_id) {
         this.account_id = account_id;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public Date getCreated_time() {
+        return created_time;
+    }
+
+    public void setCreated_time(Date created_time) {
+        this.created_time = created_time;
+    }
+
+    public Date getUpdate_time() {
+        return update_time;
+    }
+
+    public void setUpdate_time(Date update_time) {
+        this.update_time = update_time;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public Map<String, Object> getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(Map<String, Object> attachment) {
+        this.attachment = attachment;
     }
 
     public String getLoginname() {

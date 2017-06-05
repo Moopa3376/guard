@@ -1,12 +1,11 @@
 package net.moopa.guard;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.moopa.guard.checker.PermissionChecker;
 import net.moopa.guard.checker.SignInChecker;
-import net.moopa.guard.config.Configs;
+import net.moopa.guard.config.GuardConfigs;
 import net.moopa.guard.jwt.JwtWrapper;
 import net.moopa.guard.model.account.Account;
 import net.moopa.guard.model.permission.Permission;
@@ -20,7 +19,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Moopa on 13/05/2017.
@@ -147,15 +145,15 @@ public class Guard {
     }
 
     //缓存相关操作
-    public static Account getAccountByLoginname(String tokenname){
-        Account account = cache.getAccount(tokenname);
+    public static Account getAccountByLoginname(String loginname){
+        Account account = cache.getAccount(loginname);
         if(account == null){
-            account = guardService.getAccountByLoginname(tokenname);
+            account = guardService.getAccountByLoginname(loginname);
             if(account == null){
-                logger.error("can't get account by loginname {}, please ensure your guard service class implement correctly.",tokenname);
+                logger.error("can't get account by loginname {}, please ensure your guard service class implement correctly.",loginname);
                 return null;
             }
-            cache.putAccount(tokenname,account);
+            cache.putAccount(loginname,account);
         }
         return account;
     }
@@ -192,7 +190,7 @@ public class Guard {
 
     static{
         //获取用户自身所定义的服务实现类
-        String serviceClass = Configs.get("guard.guardService");
+        String serviceClass = GuardConfigs.get("guard.guardService");
         Class servClass = null;
         try {
             servClass = Class.forName(serviceClass.trim());

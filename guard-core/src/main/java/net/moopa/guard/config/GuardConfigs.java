@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
@@ -13,9 +12,9 @@ import java.util.Properties;
  * Created by LeeAutumn on 11/25/16.
  * blog: leeautumn.net
  */
-public class Configs {
+public class GuardConfigs {
     private static HashMap<String,String> configs = new HashMap<String,String>();
-    private static Logger logger = LoggerFactory.getLogger(Configs.class);
+    private static Logger logger = LoggerFactory.getLogger(GuardConfigs.class);
 
     static {
         Properties properties = PropertiesFileUtil.getProperties("guard.config");
