@@ -29,7 +29,6 @@ public class JwtWrapper {
     private static JWTVerifier jwtVerifier;
 
     static{
-
         try {
             algorithmHS = Algorithm.HMAC256(secretKey);
             jwtVerifier = JWT.require(algorithmHS).withIssuer(issuer).build();

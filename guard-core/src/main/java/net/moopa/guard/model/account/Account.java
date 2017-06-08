@@ -13,10 +13,11 @@ public class Account {
     public int account_id;
     public String loginname;
     public String password;
-    String phone;
+    String phone_number;
+    String email;
     public Date created_time;
     public Date update_time;
-    public int role_id;
+    public Date last_login_time;
     public int status;
 
 
@@ -24,11 +25,10 @@ public class Account {
 
     public Account(){}
 
-    public Account(String account_id,String loginname,String password,String role_id){
+    public Account(String account_id,String loginname,String password){
         this.account_id = Integer.parseInt(account_id);
         this.loginname = loginname;
         this.password = password;
-        this.role_id = Integer.parseInt(role_id);
     }
 
     public void put(String key,Object value){
@@ -47,12 +47,12 @@ public class Account {
         this.account_id = account_id;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhone_number() {
+        return phone_number;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhone_number(String phone_number) {
+        this.phone_number = phone_number;
     }
 
     public Date getCreated_time() {
@@ -95,13 +95,6 @@ public class Account {
         this.loginname = loginname;
     }
 
-    public int getRole_id() {
-        return role_id;
-    }
-
-    public void setRole_id(int role_id) {
-        this.role_id = role_id;
-    }
 
     public String getPassword() {
         return password;
@@ -109,5 +102,21 @@ public class Account {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Date getLast_login_time() {
+        return last_login_time;
+    }
+
+    public void setLast_login_time(Date last_login_time) {
+        this.last_login_time = last_login_time;
     }
 }

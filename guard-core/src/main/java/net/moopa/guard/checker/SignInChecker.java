@@ -30,7 +30,14 @@ public class SignInChecker {
 
         //接下来比对loginname和password是否匹配
         //需要拿到数据库中存储的密码
+        if(guardService == null){
+            guardService = Guard.guardService;
+        }
         Account account = guardService.getAccountByLoginname(loginname);
+        //用户名不存在
+        if(account == null){
+            return null;
+        }
         String anpassword = account.getPassword();
         boolean match = guardService.matchPassword(password,anpassword);
 

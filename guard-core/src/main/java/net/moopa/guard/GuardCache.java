@@ -26,40 +26,43 @@ public class GuardCache {
     private static CacheManager accountCacheManager = CacheManagerBuilder.newCacheManagerBuilder()
             .withCache("accountCache",
                     CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Account.class,
-                            ResourcePoolsBuilder.heap(100))
-                            .build())
-            .build(true);
+                            ResourcePoolsBuilder.heap(100))).build();
 
 
     private static CacheManager roleCacheManager = CacheManagerBuilder.newCacheManagerBuilder()
             .withCache("roleCache",
                     CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Role.class,
-                            ResourcePoolsBuilder.heap(100))
-                            .build())
-            .build(true);
+                            ResourcePoolsBuilder.heap(100))).build();
+
 
     private static CacheManager tokenCacheManager = CacheManagerBuilder.newCacheManagerBuilder()
             .withCache("tokenCache",
                     CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, AuthorizeToken.class,
-                            ResourcePoolsBuilder.heap(10000))
-                            .build())
-            .build(true);
+                            ResourcePoolsBuilder.heap(10000))).build();
+
 
 
     //roleCache的key是roleName
-    public Cache<String,Role> roleCache = roleCacheManager.getCache("roleCache", String.class,Role.class);
+    public Cache<String,Role> roleCache;
 
     //token是tokenname
-    public Cache<String,Account> accountCache = accountCacheManager.getCache("accountCache",String.class,Account.class);
+    public Cache<String,Account> accountCache = null;
 
     //account的key是loginname
-    public Cache<String,AuthorizeToken> tokenCache = tokenCacheManager.getCache("tokenCache",String.class,AuthorizeToken.class);
+    public Cache<String,AuthorizeToken> tokenCache = null;
 
 
     protected Map<Integer,Role> roleIdMapRolename = new HashMap<Integer, Role>();
 
     protected GuardCache(){
         logger.info("---------- init guard cache ----------");
+        accountCacheManager.init();
+        roleCacheManager.init();
+        tokenCacheManager.init();
+
+        roleCache = roleCacheManager.getCache("roleCache", String.class,Role.class);
+        accountCache = accountCacheManager.getCache("accountCache",String.class,Account.class);
+        tokenCache = tokenCacheManager.getCache("tokenCache",String.class,AuthorizeToken.class);
     }
 
     public AuthorizeToken getAuthorizeTokenByTokenName(String jwt){

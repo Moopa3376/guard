@@ -30,6 +30,7 @@ public class GuardFilter implements Filter {
         for(String s : ss){
             if(s != null && !s.equals("")){
                 exurls.add(s);
+                logger.warn("guard exclude url : {}",s);
             }else {
                 logger.error("Error config : guard.exclude.url - {}",exclude);
             }
@@ -45,16 +46,18 @@ public class GuardFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         //path转化
         String rp = Guard.guardService.convertRequestToPermission(servletRequest);
-        System.out.println(rp);
+
         //忽略excludeurl
         if(exurls.contains(rp)){
+            logger.warn("Ignore request : {}",rp);
             filterChain.doFilter(servletRequest,servletResponse);
+            return;
         }
 
 
         //获取请求路径
-        String requestPath = ((HttpServletRequest)servletRequest).getPathInfo();
         if(logger_output){
+            String requestPath = ((HttpServletRequest)servletRequest).getPathInfo();
             logger.info("Filter request path : {}",requestPath);
         }
 
@@ -63,6 +66,9 @@ public class GuardFilter implements Filter {
         if(token == null){
             ((HttpServletResponse)servletResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
+        }
+        if(logger_output){
+            logger.debug("get request with token : {} , rp : {}",token,rp);
         }
         //验证token正确性 - 是否是我方所签发的,如果不正确则直接返回401
         DecodedJWT jwt = JwtWrapper.verifyAndDecodeJwt(token);
@@ -74,6 +80,7 @@ public class GuardFilter implements Filter {
         //看看cache中是否有当前的token
         if(!Guard.isTokenExisted(token)){
             //未登录 直接返回
+            logger.warn("illege login with legal token, token:{},rp:{}",token,rp);
             ((HttpServletResponse)servletResponse).setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
@@ -85,6 +92,7 @@ public class GuardFilter implements Filter {
             filterChain.doFilter(servletRequest,servletResponse);
         }else {
             //未授权 直接返回
+            logger.warn("account unauthorized, token:{} , rp:{}",token,rp);
             ((HttpServletResponse)servletResponse).setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }

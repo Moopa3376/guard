@@ -27,6 +27,8 @@ public interface IGuardService {
 
     //以下是获取account的接口
     public Account getAccountByLoginname(String loginname);
+    //获取用户角色的接口
+    public Role getRoleByAccount(Account account);
 
     //结束初始化过程
     public void endInit();

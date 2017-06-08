@@ -21,7 +21,9 @@ public class Role {
     Date update_time;
     Map<String,Permission> allowedActionList = new ConcurrentHashMap<String, Permission>();
 
+    public Role(){
 
+    }
     public Role(int id, String name){
         this.role_id = id;
         this.rolename = name;

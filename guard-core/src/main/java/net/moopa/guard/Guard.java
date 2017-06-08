@@ -12,8 +12,10 @@ import net.moopa.guard.model.permission.Permission;
 import net.moopa.guard.model.role.Role;
 import net.moopa.guard.service.IGuardService;
 import net.moopa.guard.token.AuthorizeToken;
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.misc.BASE64Decoder;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -37,12 +39,59 @@ import java.util.List;
 public class Guard {
     private static Logger logger = LoggerFactory.getLogger(Guard.class);
 
-    public static boolean isInited = false;
+    public static volatile boolean isInited = false;
     public static IGuardService guardService = null;
     //缓存
     private static GuardCache cache = new GuardCache();
     protected static SignInChecker signInChecker = new SignInChecker();
     protected static PermissionChecker permissionChecker = new PermissionChecker();
+
+    static{
+        //获取用户自身所定义的服务实现类
+        String serviceClass = GuardConfigs.get("guard.guardService");
+        Class servClass = null;
+        try {
+            servClass = Class.forName(serviceClass.trim());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            guardService = (IGuardService) (servClass.newInstance());
+            logger.info("--------GuardService initialize successfully--------");
+        } catch (InstantiationException e) {
+            System.err.println("Please add the constructor with no parameter.\n");
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            System.err.println("Please add the public constructor with no parameter.\n");
+            e.printStackTrace();
+        }
+
+        //进行初始化
+        init();
+    }
+
+    private static void init(){
+        if(!isInited){
+
+
+            //初始化缓存,读入角色和权限数据
+            List<Role> roles = guardService.leadIntoRole();
+            List<Permission> permissions = guardService.leadIntoPermission();
+
+            //匹配角色和权限
+            guardService.matchRoleAndPermission(roles,permissions);
+
+            //加入缓存
+            for(Role r : roles){
+                cache.roleCache.put(r.getRolename(),r);
+                //匹配roleid和rolename
+                cache.roleIdMapRolename.put(r.getRole_id(),r);
+            }
+
+            //初始化结束
+            isInited = true;
+        }
+    }
 
 
 
@@ -71,6 +120,10 @@ public class Guard {
         return cache.tokenCache.containsKey(tokenname);
     }
 
+    public static void putTokenInCache(AuthorizeToken token){
+        cache.tokenCache.put(token.getJwtToken(),token);
+    }
+
     /**
      * 该方法主要用于用户的下线操作
      * 根据token来进行下线
@@ -87,7 +140,7 @@ public class Guard {
     public static boolean permissionCheck(String tokenname,String permission){
         Account account = getAccountByLoginname(cache.getAuthorizeTokenByTokenName(tokenname).getLoginname());
 
-        Role role = cache.getRolenameByRoleId(account.getRole_id());
+        Role role = cache.getRolenameByRoleId(guardService.getRoleByAccount(account).getRole_id());
 
         return permissionChecker.permissionCheck(role,permission);
     }
@@ -119,7 +172,7 @@ public class Guard {
     public static AuthorizeToken updateAuthorizeToken(AuthorizeToken token,String key,String val,HttpServletResponse httpServletResponse){
         String jwt = token.getJwtToken();
         DecodedJWT decodedJWT = JwtWrapper.verifyAndDecodeJwt(jwt);
-        String payload = decodedJWT.getPayload();
+        String payload = new String(Base64.decodeBase64(decodedJWT.getPayload()));
 
         //进行json解析
         JsonParser jsonParser = new JsonParser();
@@ -132,6 +185,10 @@ public class Guard {
         //接下来在http-header中进行更新
         httpServletResponse.setHeader("X-token",res_token);
 
+        //接下来cache中也要更新
+        cache.tokenCache.remove(jwt);
+        cache.tokenCache.put(res_token,token);
+
         return token;
     }
 
@@ -139,7 +196,7 @@ public class Guard {
         String jwt = token.getJwtToken();
         //直接认为是已知正确的token
         //获取payload
-        String payload = jwt.split("\\.")[1];
+        String payload = new String(Base64.decodeBase64(jwt.split("\\.")[1]));
         JsonObject jsonObject = (JsonObject) new JsonParser().parse(payload);
         return jsonObject.get(key).getAsString();
     }
@@ -164,50 +221,5 @@ public class Guard {
     }
 
 
-    private static void init(){
-        if(!isInited){
 
-
-            //初始化缓存,读入角色和权限数据
-            cache = new GuardCache();
-            List<Role> roles = guardService.leadIntoRole();
-            List<Permission> permissions = guardService.leadIntoPermission();
-
-            //匹配角色和权限
-            guardService.matchRoleAndPermission(roles,permissions);
-
-            //加入缓存
-            for(Role r : roles){
-                cache.roleCache.put(r.getRolename(),r);
-                //匹配roleid和rolename
-                cache.roleIdMapRolename.put(r.getRole_id(),r);
-            }
-
-            //初始化结束
-            isInited = true;
-        }
-    }
-
-    static{
-        //获取用户自身所定义的服务实现类
-        String serviceClass = GuardConfigs.get("guard.guardService");
-        Class servClass = null;
-        try {
-            servClass = Class.forName(serviceClass.trim());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            guardService = (IGuardService) (servClass.newInstance());
-        } catch (InstantiationException e) {
-            System.err.println("Please add the constructor with no parameter.\n");
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            System.err.println("Please add the public constructor with no parameter.\n");
-            e.printStackTrace();
-        }
-
-        //进行初始化
-        init();
-    }
 }
