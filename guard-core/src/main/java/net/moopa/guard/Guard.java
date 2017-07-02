@@ -46,32 +46,31 @@ public class Guard {
     protected static SignInChecker signInChecker = new SignInChecker();
     protected static PermissionChecker permissionChecker = new PermissionChecker();
 
-    static{
-        //获取用户自身所定义的服务实现类
-        String serviceClass = GuardConfigs.get("guard.guardService");
-        Class servClass = null;
-        try {
-            servClass = Class.forName(serviceClass.trim());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            guardService = (IGuardService) (servClass.newInstance());
-            logger.info("--------GuardService initialize successfully--------");
-        } catch (InstantiationException e) {
-            System.err.println("Please add the constructor with no parameter.\n");
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            System.err.println("Please add the public constructor with no parameter.\n");
-            e.printStackTrace();
-        }
 
-        //进行初始化
-        init();
-    }
 
-    private static void init(){
+    public static void init(){
         if(!isInited){
+
+            GuardConfigs.init();
+
+            //获取用户自身所定义的服务实现类
+            String serviceClass = GuardConfigs.get("guard.guardService");
+            Class servClass = null;
+            try {
+                servClass = Class.forName(serviceClass.trim());
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            try {
+                guardService = (IGuardService) (servClass.newInstance());
+                logger.info("--------GuardService initialize successfully--------");
+            } catch (InstantiationException e) {
+                System.err.println("Please add the constructor with no parameter.\n");
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                System.err.println("Please add the public constructor with no parameter.\n");
+                e.printStackTrace();
+            }
 
 
             //初始化缓存,读入角色和权限数据
@@ -219,6 +218,7 @@ public class Guard {
         AuthorizeToken authorizeToken = cache.getAuthorizeTokenByTokenName(tokenname);
         return authorizeToken;
     }
+
 
 
 

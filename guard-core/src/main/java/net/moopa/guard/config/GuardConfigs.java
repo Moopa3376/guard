@@ -16,7 +16,7 @@ public class GuardConfigs {
     private static HashMap<String,String> configs = new HashMap<String,String>();
     private static Logger logger = LoggerFactory.getLogger(GuardConfigs.class);
 
-    static {
+    public static void init(){
         Properties properties = PropertiesFileUtil.getProperties("guard.config");
         //开始验证 配置 是否正确
         //需要得到用户自己的用户服务实现
