@@ -6,6 +6,13 @@ Guard is a framework to manage sign in and authority checks;
 
 Guard是基于jwt的控制框架,致力于方便用户统一管理web和app端的用户以及相应的`登录和权限`.
 
+Guard配置
+--
+
+* 在web.xml中加入相应filter
+* 配置好guard.config
+* 自己按照标准实现GuardService
+
 Guard启动:
 --
 * 首先在web.xml加入Guard Filter
@@ -28,3 +35,5 @@ Guard启动:
     * 验证cache中是否已有相应jwt
     * 验证权限是否可以请求该path
     * 放行 or 401 or 403
+
+
