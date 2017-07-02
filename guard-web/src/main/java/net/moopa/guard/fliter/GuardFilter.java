@@ -40,6 +40,7 @@ public class GuardFilter implements Filter {
 
     public void init(FilterConfig filterConfig) throws ServletException {
         logger.info("-------------- Guard Filter start. --------------");
+        Guard.init();
 
     }
 
