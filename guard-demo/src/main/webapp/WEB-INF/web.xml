@@ -12,7 +12,7 @@
 
   <filter>
     <filter-name>guard</filter-name>
-    <filter-class>net.moopa.guard.fliter.GuardFilter</filter-class>
+    <filter-class>net.moopa3376.guard.fliter.GuardFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>guard</filter-name>
