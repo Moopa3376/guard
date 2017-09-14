@@ -39,7 +39,7 @@
     <moduleSets>
         <moduleSet>
             <includes>
-                <include>net.moopa.guard:guard-demo</include>
+                <include>net.moopa3376.guard:guard-demo</include>
             </includes>
             <binaries>
                 <outputDirectory>/</outputDirectory>

@@ -39,8 +39,8 @@
     <moduleSets>
         <moduleSet>
             <includes>
-                <include>net.moopa.guard:guard-core</include>
-                <include>net.moopa.guard:guard-web</include>
+                <include>net.moopa3376.guard:guard-core</include>
+                <include>net.moopa3376.guard:guard-web</include>
             </includes>
             <binaries>
                 <outputDirectory>/</outputDirectory>
