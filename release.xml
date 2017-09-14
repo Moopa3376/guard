@@ -17,8 +17,8 @@
   -->
 
 <assembly>
-    <id>guard</id>
-    <baseDirectory>guard</baseDirectory>
+    <id>core</id>
+    <baseDirectory>guard-core</baseDirectory>
     <formats>
         <format>dir</format>
         <format>tar.gz</format>

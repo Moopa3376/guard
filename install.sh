@@ -17,11 +17,16 @@
 #git pull
 
 rm -rf target
+rm -rf release
+
+mkdir release
+
 if [ -z "$JAVA_HOME" ]; then
   echo "Please set the env of JAVA_HOME"
 else
     mvn -Dmaven.test.skip=true clean package install assembly:assembly -U
 
 #   setup the servicesrv moudle
+    cd release
     ln -s ../target/guard   guard
 fi
