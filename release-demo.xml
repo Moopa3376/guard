@@ -17,7 +17,7 @@
   -->
 
 <assembly>
-    <id>guard</id>
+    <id>demo</id>
     <baseDirectory>guard-demo</baseDirectory>
     <formats>
         <format>dir</format>

@@ -28,5 +28,6 @@ else
 
 #   setup the servicesrv moudle
     cd release
-    ln -s ../target/guard   guard
+    ln -s ../target/guard-core/guard-core   guard-core
+    ln -s ../target/guard-demo/guard-demo   guard-demo
 fi
