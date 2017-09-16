@@ -56,13 +56,9 @@ public class Guard {
 
     public static void init(){
         if(!isInited){
-
             if(!GuardConfigs.init()){
                 return;
             }
-
-            // init api http parameter info management
-            ApiInfoMngt.init();
 
             //获取用户自身所定义的服务实现类
             String serviceClass = GuardConfigs.get("guard.guardService");
@@ -82,6 +78,14 @@ public class Guard {
                 System.err.println("Please add the public constructor with no parameter.\n");
                 e.printStackTrace();
             }
+
+
+
+
+            // init api http parameter info management
+            ApiInfoMngt.init();
+
+
 
             GuardCacheOp.init();
 

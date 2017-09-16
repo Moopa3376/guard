@@ -1,6 +1,7 @@
 package net.moopa3376.guard.api;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class ApiInfoMngt {
                 Method[] methods = c.getMethods();
 
                 RequestMapping requestMapping = c.getAnnotation(RequestMapping.class);
-                String ahead_request_path = requestMapping != null ? requestMapping.path()[0] + (requestMapping.path().toString().endsWith("/") ? "" :  "/") : "";
+                String ahead_request_path = requestMapping != null ? Arrays.toString(requestMapping.value()) + (Arrays.toString(requestMapping.value()).toString().endsWith("/]") ? "" :  "/") : "";
 
                 for(Method m : methods){
                     Api api = new Api();
@@ -101,6 +102,7 @@ public class ApiInfoMngt {
                     String s_params = params.params();
                     Map<String,HttpRequestParameter> maps = new HashMap<String, HttpRequestParameter>();
                     //利用gson进行解析
+                    boolean parserFail = false;
                     try{
                         JsonParser jsonParser = new JsonParser();
                         JsonArray jsonArray = (JsonArray)jsonParser.parse(s_params);
@@ -116,12 +118,12 @@ public class ApiInfoMngt {
                             JsonElement jsonElement_key = jsonObject.get("key");
                             String key = null;
                             if(jsonElement_key == null){
-                                logger.error("Method {} - Path {} params setting error - key is illegal",m.getName(),requestPath);
+                                logger.error("Method {} - Path {} params setting error - some key is not set",m.getName(),requestPath);
                                 continue;
                             }
                             key = jsonElement_key.getAsString();
                             if(key.length() == 0){
-                                logger.error("Method {} - Path {} params setting error - key is illegal",m.getName(),requestPath);
+                                logger.error("Method {} - Path {} params setting error - some key is illegal",m.getName(),requestPath);
                                 continue;
                             }
 
@@ -153,7 +155,12 @@ public class ApiInfoMngt {
 
                         }
                     }catch (Exception e){
-                        logger.error("Method {} - Path {} params setting error.",m.getName(),requestPath);
+                        logger.error("Method {} Path {} params setting error.",m.getName(),requestPath);
+                        logger.error(e.getMessage());
+                        parserFail= true;
+                    }
+
+                    if(parserFail){
                         continue;
                     }
 
@@ -162,7 +169,7 @@ public class ApiInfoMngt {
                     apis.put(Guard.guardService.apiNameDefinetion(requestPath,api.requestMethod),api);
 
                     if(output_api){
-                        logger.info("Resolve api request path : {} successfully.",api.getRequestPath());
+                        logger.info("Resolve api request path : {} method: {} successfully.",api.getRequestPath(),api.getRequestMethod().getMethodName());
                     }
 
                 }
