@@ -64,7 +64,7 @@ public class ApiInfoMngt {
                 Method[] methods = c.getMethods();
 
                 RequestMapping requestMapping = c.getAnnotation(RequestMapping.class);
-                String ahead_request_path = requestMapping != null ? Arrays.toString(requestMapping.value()) + (Arrays.toString(requestMapping.value()).toString().endsWith("/]") ? "" :  "/") : "";
+                String ahead_request_path = requestMapping != null ? requestMapping.value()[0] + (requestMapping.value()[0].endsWith("/") ? "" :  "/") : "";
 
                 for(Method m : methods){
                     Api api = new Api();
@@ -75,7 +75,7 @@ public class ApiInfoMngt {
                     if(path == null){
                         continue;
                     }
-                    String requestPath = ahead_request_path + path.requestPath();
+                    String requestPath = ahead_request_path + (path.requestPath().startsWith("/") ? path.requestPath().substring(1) : path.requestPath());
                     if(requestPath == null || requestPath.length() == 0){
                         logger.error("Method {} in class {} don't have correct request path.", m.getName(), c.getName());
                         continue;

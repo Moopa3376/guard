@@ -53,7 +53,6 @@ public class GuardFilter implements Filter {
                 Guard.guardService.errorHandle(servletResponse,Guard.guardService.apiNameDefinetion(((HttpServletRequest)servletRequest).getPathInfo(),HttpRequestMethod.get(((HttpServletRequest)servletRequest).getMethod())),checkResult,logger);
                 return;
             }
-            return;
         }
 
 
