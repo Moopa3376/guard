@@ -25,13 +25,14 @@ import java.util.HashSet;
  */
 public class GuardFilter implements Filter {
     private static Logger logger = LoggerFactory.getLogger(GuardFilter.class);
-    private static boolean logger_output = "true".equals(GuardConfigs.get("filter.output")) ? true : false ;
+    private static boolean logger_output = true;
     private static HashSet<String> exurls = new HashSet<String>();
 
 
     public void init(FilterConfig filterConfig) throws ServletException {
         logger.info("-------------- Guard Filter start. --------------");
         Guard.init();
+        logger_output = "true".equals(GuardConfigs.get("filter.output")) ? true : false ;
     }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

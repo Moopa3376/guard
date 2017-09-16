@@ -23,7 +23,7 @@ public class GuardConfigs {
         try {
             properties = PropertiesFileUtil.getProperties("guard-config.properties");
         }catch (Exception e){
-            logger.error("get guatd-config.properties, msg: {}",e.getMessage());
+            logger.error("get guard-config.properties, msg: {}",e.getMessage());
             return false;
         }
         return true;
@@ -43,7 +43,7 @@ public class GuardConfigs {
     private static void put(Properties properties,String key){
         Object o1 = properties.get(key);
         if(o1 == null){
-
+            logger.error("get key : {} from guard-config.properties error: no suck key",key);
         }
         configs.put(key,o1.toString().trim());
     }

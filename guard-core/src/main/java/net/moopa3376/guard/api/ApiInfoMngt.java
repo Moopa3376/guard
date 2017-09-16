@@ -38,17 +38,17 @@ public class ApiInfoMngt {
      */
     public static void init() {
         //首先根据配置文件读取需要扫描的包名
-        String packages = GuardConfigs.get("package-scan");
+        String packages = GuardConfigs.get("package.scan");
 
         if(packages == null){
-            logger.info("Apc config - package-scan not set correctly.");
+            logger.info("guard config - package.scan not set correctly.");
         }
 
         String[] ss = packages.split(",");
 
         for(String s : ss){
             //根据配置找到相应classes
-            boolean output_api = "true".equals(GuardConfigs.get("output_api"));
+            boolean output_api = "true".equals(GuardConfigs.get("output.api"));
             List<Class<?>> classes = LoadClasses.getClassByPkgName(s,true,Thread.currentThread().getContextClassLoader());
 
             if(output_api){
@@ -63,7 +63,7 @@ public class ApiInfoMngt {
                 Method[] methods = c.getMethods();
 
                 RequestMapping requestMapping = c.getAnnotation(RequestMapping.class);
-                String ahead_request_path = requestMapping != null ? requestMapping.path()+"/" : "";
+                String ahead_request_path = requestMapping != null ? requestMapping.path()[0] + (requestMapping.path().toString().endsWith("/") ? "" :  "/") : "";
 
                 for(Method m : methods){
                     Api api = new Api();
@@ -159,7 +159,7 @@ public class ApiInfoMngt {
 
                     api.setParams(maps);
                     //将此解析好的api放进缓存中
-                    apis.put(Guard.guardService.apiNameDefinetion(requestPath,method.httpMethod()),api);
+                    apis.put(Guard.guardService.apiNameDefinetion(requestPath,api.requestMethod),api);
 
                     if(output_api){
                         logger.info("Resolve api request path : {} successfully.",api.getRequestPath());
