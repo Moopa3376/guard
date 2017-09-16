@@ -1,6 +1,8 @@
 package net.moopa3376.guard.config;
 
+import net.moopa3376.guard.Guard;
 import net.moopa3376.guard.common.PropertiesFileUtil;
+import net.moopa3376.guard.service.IGuardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,19 +17,27 @@ import java.util.Properties;
 public class GuardConfigs {
     private static HashMap<String,String> configs = new HashMap<String,String>();
     private static Logger logger = LoggerFactory.getLogger(GuardConfigs.class);
+    private static Properties properties = null;
 
-    public static void init(){
-        Properties properties = PropertiesFileUtil.getProperties("guard-config.properties");
-        //开始验证 配置 是否正确
-        //需要得到用户自己的用户服务实现
-
-        for(Map.Entry<Object,Object> e :properties.entrySet()){
-            put(properties,e.getKey().toString());
+    public static boolean init(){
+        try {
+            properties = PropertiesFileUtil.getProperties("guard-config.properties");
+        }catch (Exception e){
+            logger.error("get guatd-config.properties, msg: {}",e.getMessage());
+            return false;
         }
+        return true;
     }
 
     public static String get(String key){
+        if(configs.containsKey(key)){
+            return configs.get(key);
+        }
+
+        put(properties,key);
+
         return configs.get(key);
+
     }
 
     private static void put(Properties properties,String key){

@@ -1,14 +1,21 @@
 package net.moopa3376.guard;
 
+import java.util.Map;
+
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.moopa3376.guard.api.Api;
+import net.moopa3376.guard.api.ApiCheckResult;
+import net.moopa3376.guard.api.ApiInfoMngt;
 import net.moopa3376.guard.cache.GuardCacheOp;
 import net.moopa3376.guard.checker.PermissionChecker;
 import net.moopa3376.guard.checker.LogInChecker;
 import net.moopa3376.guard.config.GuardConfigs;
 import net.moopa3376.guard.exception.GuardError;
 import net.moopa3376.guard.exception.GuardException;
+import net.moopa3376.guard.http.HttpRequestMethod;
+import net.moopa3376.guard.http.HttpRequestParameter;
 import net.moopa3376.guard.jwt.JwtWrapper;
 import net.moopa3376.guard.model.account.Account;
 import net.moopa3376.guard.model.role.Role;
@@ -50,7 +57,12 @@ public class Guard {
     public static void init(){
         if(!isInited){
 
-            GuardConfigs.init();
+            if(!GuardConfigs.init()){
+                return;
+            }
+
+            // init api http parameter info management
+            ApiInfoMngt.init();
 
             //获取用户自身所定义的服务实现类
             String serviceClass = GuardConfigs.get("guard.guardService");
@@ -159,8 +171,38 @@ public class Guard {
         return GuardCacheOp.getToken(((HttpServletRequest)servletRequest).getHeader("X-token"));
     }
 
+    /**
+     * api check part
+     * @param servletRequest
+     * @return
+     */
+    public static ApiCheckResult check(ServletRequest servletRequest){
+        //获取path和method
+        String path = ((HttpServletRequest)servletRequest).getPathInfo();
+        String method = ((HttpServletRequest) servletRequest).getMethod();
 
+        //从api缓存中获取相应api
+        Api api = ApiInfoMngt.getApi(path, HttpRequestMethod.get(method));
+        if(api == null){
+            return new ApiCheckResult(true,null,null,null);
+        }
 
+        /** 开始对参数进行比较验证 **/
+        for(Map.Entry<String,HttpRequestParameter> p : api.getParams().entrySet()){
+            String p_value = servletRequest.getParameter(p.getKey());
+            //是否存在
+            if(p_value == null && p.getValue().isRequired()){
+                return new ApiCheckResult(false,p.getKey(), GuardError.API_PARAM_REQUIRED,GuardError.API_PARAM_REQUIRED.getMessage());
+            }
+
+            //进行pattern验证
+            if(!p.getValue().getPattern().matcher(p_value).matches()){
+                return new ApiCheckResult(false,p.getKey(),GuardError.API_PARAM_NOT_MATCH,GuardError.API_PARAM_NOT_MATCH.getMessage());
+            }
+        }
+
+        return new ApiCheckResult(true,null,null,null);
+    }
 
 
 

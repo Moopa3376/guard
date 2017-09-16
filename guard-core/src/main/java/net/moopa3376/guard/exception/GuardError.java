@@ -17,7 +17,10 @@ public enum GuardError {
 
     JWT_NOTCORRECT(555,"The token is not corrent."),
 
-    LOGIN_FAIL(666,"Please check your username and password.");
+    LOGIN_FAIL(666,"Please check your username and password."),
+
+    API_PARAM_NOT_MATCH(1,"Not Match Regex."),
+    API_PARAM_REQUIRED(2,"Need Parameter.");
 
 
 

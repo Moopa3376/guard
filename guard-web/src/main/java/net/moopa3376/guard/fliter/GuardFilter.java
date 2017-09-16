@@ -1,10 +1,12 @@
 package net.moopa3376.guard.fliter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import net.moopa3376.guard.api.ApiCheckResult;
 import net.moopa3376.guard.Guard;
 import net.moopa3376.guard.config.GuardConfigs;
 import net.moopa3376.guard.exception.GuardError;
 import net.moopa3376.guard.exception.GuardException;
+import net.moopa3376.guard.http.HttpRequestMethod;
 import net.moopa3376.guard.jwt.JwtWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +37,7 @@ public class GuardFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         //path转化
         String rp = Guard.guardService.convertRequestToPermission(servletRequest);
+
 
         //忽略excludeurl
         //用户自己去判断是否需要被过滤
@@ -73,12 +76,23 @@ public class GuardFilter implements Filter {
         boolean result = Guard.permissionCheck(token,rp);
 
         if(result){
-            filterChain.doFilter(servletRequest,servletResponse);
+            // start to check http parameters
+            ApiCheckResult checkResult = Guard.check(servletRequest);
+
+            if(checkResult.isPassed()){
+                filterChain.doFilter(servletRequest,servletResponse);
+                return;
+            }else{
+                Guard.guardService.errorHandle(servletResponse,Guard.guardService.apiNameDefinetion(((HttpServletRequest)servletRequest).getPathInfo(),HttpRequestMethod.get(((HttpServletRequest)servletRequest).getMethod())),checkResult,logger);
+                return;
+            }
         }else {
             //未授权 直接返回
             logger.warn("account unauthorized, token:{} , rp:{}",token,rp);
             throw new GuardException(GuardError.FORBIDDEN,"no solution");
         }
+
+
     }
 
     public void destroy() {

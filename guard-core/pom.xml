@@ -4,7 +4,7 @@
     <parent>
         <artifactId>guard-all</artifactId>
         <groupId>net.moopa3376.guard</groupId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -68,6 +68,17 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>${gson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>4.2.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>4.2.5.RELEASE</version>
         </dependency>
 
 
