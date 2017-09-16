@@ -43,7 +43,16 @@ public class GuardFilter implements Filter {
         //忽略excludeurl
         //用户自己去判断是否需要被过滤
         if(Guard.isExcludeUrl(rp)){
-            filterChain.doFilter(servletRequest,servletResponse);
+            // start to check http parameters
+            ApiCheckResult checkResult = Guard.check(servletRequest);
+
+            if(checkResult.isPassed()){
+                filterChain.doFilter(servletRequest,servletResponse);
+                return;
+            }else{
+                Guard.guardService.errorHandle(servletResponse,Guard.guardService.apiNameDefinetion(((HttpServletRequest)servletRequest).getPathInfo(),HttpRequestMethod.get(((HttpServletRequest)servletRequest).getMethod())),checkResult,logger);
+                return;
+            }
             return;
         }
 
