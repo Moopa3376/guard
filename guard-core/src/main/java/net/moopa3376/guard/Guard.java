@@ -112,7 +112,8 @@ public class Guard {
             GuardCacheOp.putToken(authorizedToken);
         }
 
-        throw new GuardException(GuardError.LOGIN_FAIL,"check carefully and login again");
+        //throw new GuardException(GuardError.LOGIN_FAIL,"check carefully and login again");
+        return authorizedToken;
     }
 
 
@@ -193,7 +194,7 @@ public class Guard {
 
         /** 开始对参数进行比较验证 **/
         for(Map.Entry<String,HttpRequestParameter> p : api.getParams().entrySet()){
-            String p_value = servletRequest.getParameter(p.getKey());
+            String p_value = ((HttpServletRequest)servletRequest).getParameter(p.getKey());
             //是否存在
             if(p_value == null && p.getValue().isRequired()){
                 return new ApiCheckResult(false,p.getKey(), GuardError.API_PARAM_REQUIRED,GuardError.API_PARAM_REQUIRED.getMessage());

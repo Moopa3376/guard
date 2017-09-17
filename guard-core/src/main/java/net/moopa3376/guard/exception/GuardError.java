@@ -20,7 +20,8 @@ public enum GuardError {
     LOGIN_FAIL(666,"Please check your username and password."),
 
     API_PARAM_NOT_MATCH(1,"Not Match Regex."),
-    API_PARAM_REQUIRED(2,"Need Parameter.");
+    API_PARAM_REQUIRED(2,"Need Parameter."),
+    API_CHECK_ERROR(3,"Api check error");
 
 
 

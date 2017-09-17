@@ -50,7 +50,7 @@ public class JwtWrapper {
                 .withIssuer(issuer)
                 .withClaim("created",now)
                 .withClaim("uuid", ShortUUIDUtil.randomUUID())
-                .withExpiresAt(new Date(now+30000))
+                .withExpiresAt(new Date(Long.parseLong(now)+30000))
                 .sign(algorithmHS);
     }
 
