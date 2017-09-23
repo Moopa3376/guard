@@ -44,8 +44,8 @@ public class GuardCacheOp {
     /**
      * 缓存相关操作
      */
-    public static Account getAccount(String token){
-        return cache.accountCache.get(token);
+    public static Account getAccount(String userId){
+        return cache.accountCache.get(userId);
     }
 
     public static void putToken(AuthorizedToken token){

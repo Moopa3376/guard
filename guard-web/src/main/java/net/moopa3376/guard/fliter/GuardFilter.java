@@ -97,7 +97,7 @@ public class GuardFilter implements Filter {
             }
         }else {
             //未授权 直接返回
-            logger.warn("account unauthorized, token:{} , rp:{}",token,rp);
+            logger.warn("account unauthorized, token:{} , rp:{}", token, rp);
             throw new GuardException(GuardError.FORBIDDEN,"no solution");
         }
 

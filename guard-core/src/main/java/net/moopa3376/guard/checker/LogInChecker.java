@@ -45,7 +45,8 @@ public class LogInChecker {
             authorizedToken.setName(name);
             //加入token
             authorizedToken.updateJwtToken(JwtWrapper.getJwt(System.currentTimeMillis()+""));
-
+            authorizedToken.put("roleId",account.getRoleId());
+            authorizedToken.put("accountId",account.getId());
         }
 
         return authorizedToken;

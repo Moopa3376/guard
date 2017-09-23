@@ -153,11 +153,10 @@ public class Guard {
     }
 
 
-    public static boolean permissionCheck(String tokenname,String permission){
+    public static boolean permissionCheck(String token,String permission){
+        long roleId = Long.parseLong(JwtWrapper.getValInPayload(token,"roleId"));
 
-        Account account = GuardCacheOp.getAccount(tokenname);
-
-        Role role = GuardCacheOp.getRoleById(account.getRoleId());
+        Role role = GuardCacheOp.getRoleById(roleId);
 
         return permissionChecker.permissionCheck(role,permission);
     }
